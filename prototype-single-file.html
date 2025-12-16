@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Darts Score Keeper</title>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #0d6efd;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: .5rem;
+    }
+    input, select, button {
+      padding: .5rem;
+      border-radius: .5rem;
+      border: 1px solid #ccc;
+      width: 90%;
+    }
+    button {
+      background: #0d6efd;
+      color: white;
+      cursor: pointer;
+      border: none;
+      margin-top: 1rem;
+    }
+    button:hover {
+      background: #0b5ed7;
+    }
+    .scores {
+      display: flex;
+      justify-content: space-between;
+      background: #f1f3f5;
+      padding: .5rem 1rem;
+      border-radius: .5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: .4rem;
+      border: 1px solid #dee2e6;
+      text-align: center;
+    }
+    th {
+      background: #e9ecef;
+    }
+    @media (max-width: 600px) {
+      main { margin: 1rem; }
+      .scores { flex-direction: column; gap: .5rem; }
+    }
+  </style>
+</head>
+<body>
+<header><h1>Darts Score Keeper</h1></header>
+
+<main>
+
+  <!-- SETUP SECTION -->
+  <section id="setup">
+    <label>Player 1:
+      <input id="player1" type="text" placeholder="Name" />
+    </label>
+
+    <label>Player 2:
+      <input id="player2" type="text" placeholder="Name" />
+    </label>
+
+    <label>Game Type:
+      <select id="gameType">
+        <option value="301">301</option>
+        <option value="501">501</option>
+      </select>
+    </label>
+
+    <label>Set Size (Legs):
+      <select id="setSize">
+        <option value="3">3 legs</option>
+        <option value="5">5 legs</option>
+        <option value="7">7 legs</option>
+      </select>
+    </label>
+
+    <button id="startBtn">Start Game</button>
+  </section>
+
+  <!-- GAME SECTION -->
+  <section id="game" style="display:none">
+    <div class="scores">
+      <div><strong id="name1Display"></strong>: <span id="score1"></span></div>
+      <div><strong id="name2Display"></strong>: <span id="score2"></span></div>
+    </div>
+
+    <label>Enter Score for <span id="currentPlayerLabel"></span>:
+      <input id="turnScore" type="number" min="0" max="180" />
+    </label>
+
+    <button id="submitTurn">Submit Turn</button>
+    <button id="resetLeg">Reset Leg</button>
+
+    <h3>Turn History</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Turn</th>
+          <th>Player</th>
+          <th>Score</th>
+          <th>Remaining</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+
+    <h3 id="winnerMsg" style="color:#0d6efd;"></h3>
+  </section>
+
+</main>
+
+<script>
+// DOM references
+const setupSection = document.getElementById('setup');
+const gameSection = document.getElementById('game');
+
+const startBtn = document.getElementById('startBtn');
+const submitTurnBtn = document.getElementById('submitTurn');
+const resetLegBtn = document.getElementById('resetLeg');
+
+const player1Input = document.getElementById('player1');
+const player2Input = document.getElementById('player2');
+const gameType = document.getElementById('gameType');
+
+const name1Display = document.getElementById('name1Display');
+const name2Display = document.getElementById('name2Display');
+
+const score1 = document.getElementById('score1');
+const score2 = document.getElementById('score2');
+
+const turnScoreInput = document.getElementById('turnScore');
+const currentPlayerLabel = document.getElementById('currentPlayerLabel');
+
+const historyBody = document.getElementById('historyBody');
+const winnerMsg = document.getElementById('winnerMsg');
+
+// Game data
+let players = [];
+let scores = [];
+let currentPlayer = 0;
+let turnCounter = 1;
+
+
+// Start game
+startBtn.addEventListener('click', () => {
+  const p1 = player1Input.value.trim();
+  const p2 = player2Input.value.trim();
+
+  if (!p1 || !p2) return alert("Enter both player names");
+
+  const startScore = Number(gameType.value);
+
+  players = [p1, p2];
+  scores = [startScore, startScore];
+
+  name1Display.textContent = p1;
+  name2Display.textContent = p2;
+
+  score1.textContent = startScore;
+  score2.textContent = startScore;
+
+  currentPlayer = 0;
+  turnCounter = 1;
+  updateCurrentPlayerLabel();
+
+  historyBody.innerHTML = '';
+  winnerMsg.textContent = '';
+
+  setupSection.style.display = "none";
+  gameSection.style.display = "block";
+});
+
+
+// Submit turn
+submitTurnBtn.addEventListener('click', () => {
+  const val = Number(turnScoreInput.value);
+
+  if (isNaN(val) || val < 0 || val > 180) {
+    return alert("Enter a valid score (0–180)");
+  }
+
+  const playerIndex = currentPlayer;
+  const newScore = scores[playerIndex] - val;
+
+  if (newScore < 0) {
+    alert("Bust! Score cannot go below 0.");
+  } else {
+    scores[playerIndex] = newScore;
+    updateScores();
+    addTurnRow(turnCounter, players[playerIndex], val, newScore);
+    turnCounter++;
+
+    if (newScore === 0) {
+      winnerMsg.textContent = `🏆 Winner: ${players[playerIndex]}!`;
+      return;
+    }
+  }
+
+  currentPlayer = 1 - currentPlayer;
+  updateCurrentPlayerLabel();
+
+  turnScoreInput.value = "";
+});
+
+
+// Reset leg
+resetLegBtn.addEventListener('click', () => {
+  const startScore = Number(gameType.value);
+  scores = [startScore, startScore];
+  updateScores();
+
+  turnCounter = 1;
+  currentPlayer = 0;
+  updateCurrentPlayerLabel();
+
+  historyBody.innerHTML = '';
+  winnerMsg.textContent = '';
+});
+
+
+// Helpers
+function updateScores() {
+  score1.textContent = scores[0];
+  score2.textContent = scores[1];
+}
+
+function updateCurrentPlayerLabel() {
+  currentPlayerLabel.textContent = players[currentPlayer];
+}
+
+function addTurnRow(turn, player, score, remaining) {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${turn}</td>
+    <td>${player}</td>
+    <td>${score}</td>
+    <td>${remaining}</td>
+  `;
+  historyBody.appendChild(row);
+}
+
+</script>
+
+</body>
+</html>
