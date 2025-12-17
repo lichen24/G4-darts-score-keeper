@@ -5,12 +5,14 @@ let legs = [0, 0];
 let legCounter = 0;
 let currentPlayer = 0;
 let matchEnded = false;
+let maxLegs = 3;
 
 // --- Elements ---
 const startBtn = document.getElementById("startBtn");
 const darkModeBtn = document.getElementById("darkModeBtn");
 const setupSection = document.getElementById("setup");
 const gameSection = document.getElementById("game");
+const setSizeSelect = document.getElementById("setSize");
 
 const player1Input = document.getElementById("player1");
 const player2Input = document.getElementById("player2");
@@ -115,8 +117,8 @@ function handleLegWin(winnerIndex) {
   announcementEl.textContent = `${players[winnerIndex]} won leg ${legCounter}!`;
   appendLegHistory(winnerIndex);
 
-  // First to 3 legs wins the match
-  if (legs[winnerIndex] === 3) {
+  // First to  maxLegs wins the match
+  if (legs[winnerIndex] === maxLegs) {
     matchEnded = true;
     matchWinnerEl.style.display = "block";
     matchWinnerEl.textContent = `${players[winnerIndex]} WINS THE MATCH!`;
@@ -142,6 +144,8 @@ startBtn.addEventListener("click", () => {
   legs = [0, 0];
   legCounter = 0;
   matchEnded = false;
+
+  maxLegs = Number(setSizeSelect.value) || 3;
 
   legsP1El.textContent = "0";
   legsP2El.textContent = "0";
