@@ -510,3 +510,16 @@ const helpBox = document.getElementById("helpBox");
 helpBtn.addEventListener("click", () => {
     helpBox.classList.toggle("hidden");
 });
+// Close help when clicking outside
+document.addEventListener("click", (e) => {
+  const helpBtn = document.getElementById("helpBtn");
+  const helpBox = document.getElementById("helpBox");
+  if (!helpBtn || !helpBox) return;
+
+  const clickedInsideHelp = helpBox.contains(e.target);
+  const clickedHelpButton = helpBtn.contains(e.target);
+
+  if (!clickedInsideHelp && !clickedHelpButton) {
+    helpBox.classList.add("hidden");
+  }
+});
