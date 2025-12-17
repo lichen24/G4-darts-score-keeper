@@ -77,9 +77,9 @@
       </div>
 
       <h3>Turn History</h3>
-      <div id="turnHistory"></div>
+      <div id="turnHistory" aria-live="polite"></div>
 
-      <div id="announcement"></div>
+      <div id="announcement" role="status"></div>
 
       <div class="legs-info">
         Legs: <span id="legsP1">0</span> - <span id="legsP2">0</span>
@@ -87,7 +87,7 @@
 
       <div id="legsHistory">Leg Wins:</div>
 
-      <h2 id="matchWinner"></h2>
+      <h2 id="matchWinner" role="alert"></h2>
 
       <div class="btn-row">
         <button id="rematchBtn" style="display:none; background:#198754;">Rematch</button>
