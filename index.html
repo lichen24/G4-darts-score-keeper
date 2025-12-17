@@ -103,6 +103,28 @@
     </section>
   </div>
 
-  <script src="script.js"></script>
+
 </body>
+<!-- Help Button -->
+<button id="helpBtn" class="help-btn">?</button>
+
+<!-- Help Box -->
+<div id="helpBox" class="help-box hidden">
+    <h3>How the Darts Score Keeper Works</h3>
+    <p>
+        Each player starts with a set score (e.g. 501).
+        Enter the score you hit in a turn and click <strong>Add Score</strong>.
+    </p>
+    <ul>
+        <li>Scores are subtracted from the player’s total</li>
+        <li>If a score goes below 0, the turn is invalid (bust)</li>
+        <li>The game ends when a player reaches exactly 0</li>
+        <li>Turns automatically switch between players</li>
+    </ul>
+    <p>
+        Use <strong>Reset</strong> to start a new game.
+    </p>
+</div>
+
+<script src="script.js"></script>
 </html>

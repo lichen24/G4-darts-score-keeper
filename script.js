@@ -506,3 +506,10 @@ endGameBtn.addEventListener("click", () => {
 
   resetToSetup();
 });
+
+const helpBtn = document.getElementById("helpBtn");
+const helpBox = document.getElementById("helpBox");
+
+helpBtn.addEventListener("click", () => {
+    helpBox.classList.toggle("hidden");
+});
