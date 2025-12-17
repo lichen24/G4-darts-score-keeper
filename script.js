@@ -523,3 +523,25 @@ document.addEventListener("click", (e) => {
     helpBox.classList.add("hidden");
   }
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const scoreInput = document.getElementById("scoreInput");
+  const addScoreBtn = document.getElementById("addScoreBtn");
+
+  if (scoreInput && addScoreBtn) {
+    scoreInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();     // stop form reload
+        addScoreBtn.click();    // reuse existing logic
+      }
+    });
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const helpBox = document.getElementById("helpBox");
+    if (helpBox) {
+      helpBox.classList.add("hidden");
+    }
+  }
+});
