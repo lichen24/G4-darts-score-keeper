@@ -51,6 +51,53 @@ const winnerNameEl = document.getElementById("winnerName");
 const legsHistoryEl = document.getElementById("legsHistory");
 const rematchBtn = document.getElementById("rematchBtn");
 const newGameBtn = document.getElementById("newGameBtn");
+const endGameBtn = document.getElementById("endGameBtn");
+
+// --- Functions ---
+function resetToSetup() {
+  matchEnded = false;
+  players = ["", ""];
+  scores = [0, 0];
+  legs = [0, 0];
+  legCounter = 0;
+  currentPlayer = 0;
+  turns = [];
+  editingTurnIndex = null;
+
+  player1Input.value = "";
+  player2Input.value = "";
+  avatar1Input.value = "";
+  avatar2Input.value = "";
+
+  name1El.textContent = "";
+  name2El.textContent = "";
+  score1El.textContent = "";
+  score2El.textContent = "";
+
+  p1avatarEl.src = "";
+  p2avatarEl.src = "";
+
+  legsP1El.textContent = "0";
+  legsP2El.textContent = "0";
+
+  announcementEl.style.display = "none";
+  announcementEl.textContent = "";
+  matchWinnerEl.style.display = "none";
+  celebrationEl.style.display = "none";
+  winnerNameEl.textContent = "";
+
+  legsHistoryEl.innerHTML = "Leg Wins:";
+  turnHistoryEl.innerHTML = "";
+
+  avg1El.textContent = "0";
+  avg2El.textContent = "0";
+
+  setupSection.style.display = "block";
+  gameSection.style.display = "none";
+
+  rematchBtn.style.display = "none";
+  newGameBtn.style.display = "none";
+}
 
 // ==============================
 // Game logic functions
@@ -451,4 +498,11 @@ newGameBtn.addEventListener("click", () => {
 // Event: Dark mode toggle
 darkModeBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark");
+});
+
+endGameBtn.addEventListener("click", () => {
+  const ok = confirm("End the game now? All progress will be lost.");
+  if (!ok) return;
+
+  resetToSetup();
 });
