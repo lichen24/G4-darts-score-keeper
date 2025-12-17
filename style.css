@@ -216,3 +216,16 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   .scoreboard { flex-direction: column; }
   .scorebox { justify-content: flex-start; }
 }
+
+.turn-entry button {
+  padding: 0.15rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: transparent;
+  color:var(--accent);
+  border: 1px solid var(--border);
+}
+
+.turn-entry button:hover {
+  background: var(--turn-bg);
+}
