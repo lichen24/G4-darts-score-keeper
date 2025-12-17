@@ -5,6 +5,8 @@ let legs = [0, 0];
 let legCounter = 0;
 let currentPlayer = 0;
 let matchEnded = false;
+let turns = [];
+let editingTurnIndex = null;
 let maxLegs = 3;
 
 // --- Elements ---
@@ -81,12 +83,84 @@ function updateCurrentPlayerLabel() {
   currentPlayerLabel.textContent = players[currentPlayer] || "";
 }
 
-function addTurnEntry(playerName, val, remaining) {
+function addTurnEntry(turn, index) {
   const div = document.createElement("div");
   div.className = "turn-entry";
-  div.textContent = `${playerName}: ${val} (left ${remaining})`;
+
+  // Editing mode
+  if (editingTurnIndex === index) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.max = "180";
+    input.value = turn.score;
+    input.style.width = "80px";
+
+    div.appendChild(
+      document.createTextNode(`${players[turn.playerIndex]}: `)
+    );
+    div.appendChild(input);
+
+    // Save button
+    const saveBtn = document.createElement("button");
+    saveBtn.textContent = "Save";
+    saveBtn.style.marginLeft = "8px";
+    saveBtn.onclick = () => {
+      const val = Number(input.value);
+      if (Number.isNaN(val) || val < 0 || val > 180) {
+        alert("Invalid score (0–180)");
+        return;
+      }
+
+      turns[index].score = val;
+      editingTurnIndex = null;
+      recalculateScores();
+      renderTurnHistory();
+    };
+    div.appendChild(saveBtn);
+
+    // Cancel button
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.style.marginLeft = "5px";
+    cancelBtn.onclick = () => {
+      editingTurnIndex = null;
+      renderTurnHistory();
+    };
+    div.appendChild(cancelBtn);
+
+  } else {
+    // Display turn normally
+    const text = document.createElement("span");
+    text.textContent = `${players[turn.playerIndex]}: ${turn.score}`;
+    div.appendChild(text);
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.style.marginLeft = "10px";
+    editBtn.onclick = () => {
+      editingTurnIndex = index;
+      renderTurnHistory();
+    };
+    div.appendChild(editBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.style.marginLeft = "5px";
+    deleteBtn.onclick = () => deleteTurn(index);
+    div.appendChild(deleteBtn);
+  }
+
   turnHistoryEl.appendChild(div);
-  turnHistoryEl.scrollTop = turnHistoryEl.scrollHeight;
+}
+
+
+
+function renderTurnHistory() {
+  turnHistoryEl.innerHTML = "";
+  turns.forEach((turn, index) => {
+    addTurnEntry(turn, index);
+  });
 }
 
 function resetLeg() {
@@ -94,11 +168,13 @@ function resetLeg() {
   scores = [startScore, startScore];
   updateScores();
   turnHistoryEl.innerHTML = "";
+  turns = [];
   currentPlayer = 0;
   updateCurrentPlayerLabel();
   announcementEl.style.display = "none";
   announcementEl.textContent = "";
   turnScoreInput.value = "";
+  editingTurnIndex = null;
 }
 
 function appendLegHistory(winnerIndex) {
@@ -198,12 +274,24 @@ submitTurnBtn.addEventListener("click", () => {
 
   // Record the attempt in history based on resulting score (or bust)
   if (newScore < 0) {
-    addTurnEntry(players[idx], val, scores[idx]);
+    //addTurnEntry(players[idx], val, scores[idx]);
+    turns.push({
+      playerIndex: idx,
+      score: val,
+    });
+    renderTurnHistory();
     alert("Bust! Score cannot go below 0");
   } else {
     scores[idx] = newScore;
+
+    //Store turn data
+    turns.push({
+      playerIndex: idx,
+      score: val,
+    })
     updateScores();
-    addTurnEntry(players[idx], val, newScore);
+    renderTurnHistory();
+    
 
     if (newScore === 0) {
       handleLegWin(idx);
@@ -216,6 +304,50 @@ submitTurnBtn.addEventListener("click", () => {
   updateCurrentPlayerLabel();
   turnScoreInput.value = "";
 });
+// Delete turn at index
+function deleteTurn(index) {
+  turns.splice(index, 1);
+  recalculateScores();
+  renderTurnHistory();
+}
+
+// Edit turn at index
+function editTurn(index) {
+  const newScore = prompt("Enter new score:");
+  const val = Number(newScore);
+
+  if (Number.isNaN(val) || val < 0 || val > 180) {
+    alert("Invalid score");
+    return;
+  }
+
+  turns[index].score = val;
+  recalculateScores();
+  renderTurnHistory();
+}
+
+// Recalculate scores from turns
+function recalculateScores() {
+  scores = [getStartScore(), getStartScore()];
+  currentPlayer = 0;
+
+  turns.forEach(turn => {
+    const idx = turn.playerIndex;
+    const newScore = scores[idx] - turn.score;
+
+    if (newScore >= 0) {
+      scores[idx] = newScore;
+    }
+
+    currentPlayer = 1 - currentPlayer;
+  });
+
+  updateScores();
+  updateCurrentPlayerLabel();
+}
+
+
+
 
 // Event: Reset leg manually (does NOT reset legs count or leg counter)
 resetLegBtn.addEventListener("click", () => {
@@ -245,6 +377,8 @@ rematchBtn.addEventListener("click", () => {
   turnScoreInput.value = "";
   rematchBtn.style.display = "none";
   newGameBtn.style.display = "none";
+  editingTurnIndex = null;
+
 });
 
 // New Game button: back to setup, new players
@@ -272,7 +406,7 @@ newGameBtn.addEventListener("click", () => {
   matchWinnerEl.style.display = "none";
   matchWinnerEl.textContent = "";
   celebrationEl.style.display = "none";
-  winnerNameEl.textContent = "";
+  winnerNameEl.textContent = ""
   legsHistoryEl.innerHTML = "Leg Wins:";
   turnHistoryEl.innerHTML = "";
   turnScoreInput.value = "";
@@ -283,6 +417,8 @@ newGameBtn.addEventListener("click", () => {
   gameSection.style.display = "none";
   rematchBtn.style.display = "none";
   newGameBtn.style.display = "none";
+  editingTurnIndex = null;
+
 });
 
 // Event: Dark mode toggle
