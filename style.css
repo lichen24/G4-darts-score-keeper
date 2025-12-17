@@ -152,6 +152,18 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   display: none;
 }
 
+#celebration {
+  margin-top:1rem;
+  padding:1.2rem;
+  background:var(--turn-bg);
+  border-radius:0.7rem;
+  text-align:center;
+  font-size:1.3rem;
+  font-weight:700;
+  color:var(--accent);
+  border:2px solid var(--accent);
+}
+
 #turnHistory {
   background: var(--turn-bg);
   padding: 1rem;

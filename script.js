@@ -37,6 +37,8 @@ const legsP1El = document.getElementById("legsP1");
 const legsP2El = document.getElementById("legsP2");
 const announcementEl = document.getElementById("announcement");
 const matchWinnerEl = document.getElementById("matchWinner");
+const celebrationEl = document.getElementById("celebration");
+const winnerNameEl = document.getElementById("winnerName");
 const legsHistoryEl = document.getElementById("legsHistory");
 const rematchBtn = document.getElementById("rematchBtn");
 const newGameBtn = document.getElementById("newGameBtn");
@@ -122,6 +124,11 @@ function handleLegWin(winnerIndex) {
     matchEnded = true;
     matchWinnerEl.style.display = "block";
     matchWinnerEl.textContent = `${players[winnerIndex]} WINS THE MATCH!`;
+
+    //show celebration message
+    winnerNameEl.textContent = players[winnerIndex];
+    celebrationEl.style.display = "block";
+
     rematchBtn.style.display = "inline-block";
     newGameBtn.style.display = "inline-block";
     return;
@@ -225,6 +232,8 @@ rematchBtn.addEventListener("click", () => {
   legsP2El.textContent = "0";
   matchWinnerEl.style.display = "none";
   matchWinnerEl.textContent = "";
+  celebrationEl.style.display = "none";
+  winnerNameEl.textContent = "";
   announcementEl.style.display = "none";
   announcementEl.textContent = "";
   legsHistoryEl.innerHTML = "Leg Wins:";
@@ -262,6 +271,8 @@ newGameBtn.addEventListener("click", () => {
   announcementEl.textContent = "";
   matchWinnerEl.style.display = "none";
   matchWinnerEl.textContent = "";
+  celebrationEl.style.display = "none";
+  winnerNameEl.textContent = "";
   legsHistoryEl.innerHTML = "Leg Wins:";
   turnHistoryEl.innerHTML = "";
   turnScoreInput.value = "";
