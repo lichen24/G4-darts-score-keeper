@@ -26,6 +26,9 @@ const name1El = document.getElementById("name1");
 const name2El = document.getElementById("name2");
 const score1El = document.getElementById("score1");
 const score2El = document.getElementById("score2");
+//average score per turn
+const avg1El = document.getElementById("avg1");
+const avg2El = document.getElementById("avg2");
 const p1avatarEl = document.getElementById("p1avatar");
 const p2avatarEl = document.getElementById("p2avatar");
 
@@ -155,7 +158,6 @@ function addTurnEntry(turn, index) {
 }
 
 
-
 function renderTurnHistory() {
   turnHistoryEl.innerHTML = "";
   turns.forEach((turn, index) => {
@@ -175,6 +177,8 @@ function resetLeg() {
   announcementEl.textContent = "";
   turnScoreInput.value = "";
   editingTurnIndex = null;
+  avg1El.textContent = "0";
+  avg2El.textContent = "0";
 }
 
 function appendLegHistory(winnerIndex) {
@@ -291,8 +295,9 @@ submitTurnBtn.addEventListener("click", () => {
     })
     updateScores();
     renderTurnHistory();
-    
+    updateAverages();
 
+  
     if (newScore === 0) {
       handleLegWin(idx);
       turnScoreInput.value = "";
@@ -304,11 +309,14 @@ submitTurnBtn.addEventListener("click", () => {
   updateCurrentPlayerLabel();
   turnScoreInput.value = "";
 });
+
 // Delete turn at index
 function deleteTurn(index) {
   turns.splice(index, 1);
   recalculateScores();
   renderTurnHistory();
+  updateAverages();
+
 }
 
 // Edit turn at index
@@ -324,6 +332,8 @@ function editTurn(index) {
   turns[index].score = val;
   recalculateScores();
   renderTurnHistory();
+  updateAverages();
+
 }
 
 // Recalculate scores from turns
@@ -346,7 +356,24 @@ function recalculateScores() {
   updateCurrentPlayerLabel();
 }
 
+// Update average scores per turn
+function updateAverages() {
+  const totals = [0, 0];
+  const counts = [0, 0];
 
+  turns.forEach(turn => {
+    totals[turn.playerIndex] += turn.score;
+    counts[turn.playerIndex]++;
+  });
+
+  avg1El.textContent = counts[0] === 0
+    ? "0"
+    : (totals[0] / counts[0]).toFixed(1);
+
+  avg2El.textContent = counts[1] === 0
+    ? "0"
+    : (totals[1] / counts[1]).toFixed(1);
+}
 
 
 // Event: Reset leg manually (does NOT reset legs count or leg counter)
@@ -378,6 +405,9 @@ rematchBtn.addEventListener("click", () => {
   rematchBtn.style.display = "none";
   newGameBtn.style.display = "none";
   editingTurnIndex = null;
+  //reset averages
+  avg1El.textContent = "0";
+  avg2El.textContent = "0";
 
 });
 
@@ -418,6 +448,9 @@ newGameBtn.addEventListener("click", () => {
   rematchBtn.style.display = "none";
   newGameBtn.style.display = "none";
   editingTurnIndex = null;
+  //reset averages
+  avg1El.textContent = "0";
+  avg2El.textContent = "0";
 
 });
 
