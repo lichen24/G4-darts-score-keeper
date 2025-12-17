@@ -138,6 +138,15 @@ function updateScores() {
 
 function updateCurrentPlayerLabel() {
   currentPlayerLabel.textContent = players[currentPlayer] || "";
+  name1El.classList.remove("current-player");
+  name2El.classList.remove("current-player");
+
+  // Add highlight to the active player
+  if (currentPlayer === 0) {
+    name1El.classList.add("current-player");
+  } else {
+    name2El.classList.add("current-player");
+  }
 }
 
 function addTurnEntry(turn, index) {

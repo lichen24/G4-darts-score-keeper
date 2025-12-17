@@ -259,3 +259,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .hidden {
     display: none;
 }
+
+.current-player {
+  color: var(--accent);
+  font-weight: 700;
+}
