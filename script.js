@@ -510,3 +510,38 @@ const helpBox = document.getElementById("helpBox");
 helpBtn.addEventListener("click", () => {
     helpBox.classList.toggle("hidden");
 });
+// Close help when clicking outside
+document.addEventListener("click", (e) => {
+  const helpBtn = document.getElementById("helpBtn");
+  const helpBox = document.getElementById("helpBox");
+  if (!helpBtn || !helpBox) return;
+
+  const clickedInsideHelp = helpBox.contains(e.target);
+  const clickedHelpButton = helpBtn.contains(e.target);
+
+  if (!clickedInsideHelp && !clickedHelpButton) {
+    helpBox.classList.add("hidden");
+  }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const scoreInput = document.getElementById("scoreInput");
+  const addScoreBtn = document.getElementById("addScoreBtn");
+
+  if (scoreInput && addScoreBtn) {
+    scoreInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();     // stop form reload
+        addScoreBtn.click();    // reuse existing logic
+      }
+    });
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const helpBox = document.getElementById("helpBox");
+    if (helpBox) {
+      helpBox.classList.add("hidden");
+    }
+  }
+});
