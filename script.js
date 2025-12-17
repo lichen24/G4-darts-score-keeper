@@ -501,9 +501,6 @@ darkModeBtn.addEventListener("click", () => {
 });
 
 endGameBtn.addEventListener("click", () => {
-  const ok = confirm("End the game now? All progress will be lost.");
-  if (!ok) return;
-
   resetToSetup();
 });
 
