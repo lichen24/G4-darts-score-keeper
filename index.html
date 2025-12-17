@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Darts Score Keeper</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="top-row">
+      <h1>Darts Score Keeper</h1>
+      <button id="darkModeBtn" class="dark-toggle">Dark Mode</button>
+    </div>
+
+    <section id="setup">
+      <label>Player 1 Name
+        <input id="player1" type="text" placeholder="Player 1" />
+      </label>
+      <label>Player 1 Avatar
+        <input id="avatar1" type="file" accept="image/*" />
+      </label>
+
+      <label>Player 2 Name
+        <input id="player2" type="text" placeholder="Player 2" />
+      </label>
+      <label>Player 2 Avatar
+        <input id="avatar2" type="file" accept="image/*" />
+      </label>
+
+      <label>Game Type
+        <select id="gameType">
+          <option value="301">301</option>
+          <option value="501">501</option>
+        </select>
+      </label>
+
+      <button id="startBtn">Start Game</button>
+    </section>
+
+    <section id="game" style="display:none">
+      <div class="scoreboard">
+        <div class="scorebox">
+          <img id="p1avatar" class="avatar" alt="Player 1 avatar" />
+          <div>
+            <div id="name1"></div>
+            <div>Score: <strong id="score1"></strong> left</div>
+          </div>
+        </div>
+        <div class="scorebox">
+          <img id="p2avatar" class="avatar" alt="Player 2 avatar" />
+          <div>
+            <div id="name2"></div>
+            <div>Score: <strong id="score2"></strong> left</div>
+          </div>
+        </div>
+      </div>
+
+      <label>Enter score for <span id="currentPlayerLabel"></span>
+        <input id="turnScore" type="number" min="0" max="180" />
+      </label>
+
+      <div class="btn-row">
+        <button id="submitTurn">Submit Turn</button>
+        <button id="resetLeg" style="background:#6c757d">Reset Leg</button>
+      </div>
+
+      <h3>Turn History</h3>
+      <div id="turnHistory"></div>
+
+      <div id="announcement"></div>
+
+      <div class="legs-info">
+        Legs: <span id="legsP1">0</span> - <span id="legsP2">0</span>
+      </div>
+
+      <div id="legsHistory">Leg Wins:</div>
+
+      <h2 id="matchWinner"></h2>
+
+      <div class="btn-row">
+        <button id="rematchBtn" style="display:none; background:#198754;">Rematch</button>
+        <button id="newGameBtn" style="display:none; background:#d63384;">New Game</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
