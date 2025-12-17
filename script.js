@@ -1,4 +1,6 @@
-// --- State ---
+// ==============================
+// State (application data)
+// ==============================
 let players = ["", ""];
 let scores = [0, 0];
 let legs = [0, 0];
@@ -9,7 +11,9 @@ let turns = [];
 let editingTurnIndex = null;
 let maxLegs = 3;
 
-// --- Elements ---
+// ==============================
+// DOM element references (UI)
+// ==============================
 const startBtn = document.getElementById("startBtn");
 const darkModeBtn = document.getElementById("darkModeBtn");
 const setupSection = document.getElementById("setup");
@@ -48,6 +52,9 @@ const legsHistoryEl = document.getElementById("legsHistory");
 const rematchBtn = document.getElementById("rematchBtn");
 const newGameBtn = document.getElementById("newGameBtn");
 
+// ==============================
+// Game logic functions
+// ==============================
 function getStartScore() {
   return Number(gameTypeSelect.value) || 301;
 }
@@ -218,7 +225,9 @@ function handleLegWin(winnerIndex) {
   resetLeg();
 }
 
-// Event: Start game
+// ==============================
+// Event handlers
+// ==============================
 startBtn.addEventListener("click", () => {
   const p1 = player1Input.value.trim();
   const p2 = player2Input.value.trim();
@@ -319,22 +328,7 @@ function deleteTurn(index) {
 
 }
 
-// Edit turn at index
-function editTurn(index) {
-  const newScore = prompt("Enter new score:");
-  const val = Number(newScore);
 
-  if (Number.isNaN(val) || val < 0 || val > 180) {
-    alert("Invalid score");
-    return;
-  }
-
-  turns[index].score = val;
-  recalculateScores();
-  renderTurnHistory();
-  updateAverages();
-
-}
 
 // Recalculate scores from turns
 function recalculateScores() {
