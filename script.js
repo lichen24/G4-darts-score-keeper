@@ -36,7 +36,7 @@ const avg2El = document.getElementById("avg2");
 const p1avatarEl = document.getElementById("p1avatar");
 const p2avatarEl = document.getElementById("p2avatar");
 
-const turnScoreInput = document.getElementById("turnScore");
+//const turnScoreInput = document.getElementById("turnScore");
 const currentPlayerLabel = document.getElementById("currentPlayerLabel");
 const submitTurnBtn = document.getElementById("submitTurn");
 const resetLegBtn = document.getElementById("resetLeg");
@@ -54,6 +54,11 @@ const newGameBtn = document.getElementById("newGameBtn");
 const endGameBtn = document.getElementById("endGameBtn");
 const helpBtn = document.getElementById("helpBtn");
 const helpBox = document.getElementById("helpBox");
+
+const dart1Input = document.getElementById("dart1");
+const dart2Input = document.getElementById("dart2");
+const dart3Input = document.getElementById("dart3");
+
 
 
 // ==============================
@@ -254,6 +259,12 @@ function appendLegHistory(winnerIndex) {
   legsHistoryEl.scrollTop = legsHistoryEl.scrollHeight;
 }
 
+function clearDartInputs() {
+  dart1Input.value = "";
+  dart2Input.value = "";
+  dart3Input.value = "";
+}
+
 
 // ==============================
 // 4.Game logic functions
@@ -385,50 +396,48 @@ startBtn.addEventListener("click", () => {
 
 // Event: Submit turn
 submitTurnBtn.addEventListener("click", () => {
-  if (matchEnded) return; // game finished, ignore input
+  if (matchEnded) return;
 
-  const raw = turnScoreInput.value;
-  const val = Number(raw);
-  if (Number.isNaN(val) || val < 0 || val > 180) {
-    alert("Enter a valid score between 0 and 180");
+  const d1 = Number(dart1Input.value);
+  const d2 = Number(dart2Input.value);
+  const d3 = Number(dart3Input.value);
+
+  // Validate each dart
+  if ([d1, d2, d3].some(v => Number.isNaN(v) || v < 0 || v > 60)) {
+    alert("Each dart score must be between 0 and 60");
     return;
   }
 
+  const val = d1 + d2 + d3; // total turn score (0–180)
   const idx = currentPlayer;
   const newScore = scores[idx] - val;
 
-  // Record the attempt in history based on resulting score (or bust)
+  // Store the turn (even if bust)
+  turns.push({
+    playerIndex: idx,
+    score: val,
+  });
+
   if (newScore < 0) {
-    //addTurnEntry(players[idx], val, scores[idx]);
-    turns.push({
-      playerIndex: idx,
-      score: val,
-    });
     renderTurnHistory();
     alert("Bust! Score cannot go below 0");
   } else {
     scores[idx] = newScore;
-
-    //Store turn data
-    turns.push({
-      playerIndex: idx,
-      score: val,
-    })
     updateScores();
     renderTurnHistory();
     updateAverages();
 
-  
     if (newScore === 0) {
       handleLegWin(idx);
-      turnScoreInput.value = "";
+      clearDartInputs();
       return;
     }
   }
 
+  // Switch player
   currentPlayer = 1 - currentPlayer;
   updateCurrentPlayerLabel();
-  turnScoreInput.value = "";
+  clearDartInputs();
 });
 
 

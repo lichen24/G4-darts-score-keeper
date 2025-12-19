@@ -264,3 +264,17 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   color: var(--accent);
   font-weight: 700;
 }
+
+.throw-inputs {
+  display: flex;
+  gap: 10px;              
+  margin: 8px 0 16px;
+}
+
+.throw-inputs input {
+  width: 70px;            
+  text-align: center;
+}
+.throw-inputs {
+  justify-content: center;
+}
