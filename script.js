@@ -1,5 +1,5 @@
 // ==============================
-// State (application data)
+// 1.State (application data)
 // ==============================
 let players = ["", ""];
 let scores = [0, 0];
@@ -12,7 +12,7 @@ let editingTurnIndex = null;
 let maxLegs = 3;
 
 // ==============================
-// DOM element references (UI)
+// 2.DOM element references (UI)
 // ==============================
 const startBtn = document.getElementById("startBtn");
 const darkModeBtn = document.getElementById("darkModeBtn");
@@ -52,8 +52,13 @@ const legsHistoryEl = document.getElementById("legsHistory");
 const rematchBtn = document.getElementById("rematchBtn");
 const newGameBtn = document.getElementById("newGameBtn");
 const endGameBtn = document.getElementById("endGameBtn");
+const helpBtn = document.getElementById("helpBtn");
+const helpBox = document.getElementById("helpBox");
 
-// --- Functions ---
+
+// ==============================
+// 3. UI helper functions
+// ==============================
 function resetToSetup() {
   matchEnded = false;
   players = ["", ""];
@@ -99,12 +104,6 @@ function resetToSetup() {
   newGameBtn.style.display = "none";
 }
 
-// ==============================
-// Game logic functions
-// ==============================
-function getStartScore() {
-  return Number(gameTypeSelect.value) || 301;
-}
 
 function loadAvatar(fileInput, imgEl) {
   const file = fileInput.files && fileInput.files[0];
@@ -228,6 +227,41 @@ function renderTurnHistory() {
   });
 }
 
+// Update average scores per turn
+function updateAverages() {
+  const totals = [0, 0];
+  const counts = [0, 0];
+
+  turns.forEach(turn => {
+    totals[turn.playerIndex] += turn.score;
+    counts[turn.playerIndex]++;
+  });
+
+  avg1El.textContent = counts[0] === 0
+    ? "0"
+    : (totals[0] / counts[0]).toFixed(1);
+
+  avg2El.textContent = counts[1] === 0
+    ? "0"
+    : (totals[1] / counts[1]).toFixed(1);
+}
+
+
+function appendLegHistory(winnerIndex) {
+  const div = document.createElement("div");
+  div.textContent = `${players[winnerIndex]} won leg ${legCounter}`;
+  legsHistoryEl.appendChild(div);
+  legsHistoryEl.scrollTop = legsHistoryEl.scrollHeight;
+}
+
+
+// ==============================
+// 4.Game logic functions
+// ==============================
+function getStartScore() {
+  return Number(gameTypeSelect.value) || 301;
+}
+
 function resetLeg() {
   const startScore = getStartScore();
   scores = [startScore, startScore];
@@ -242,13 +276,6 @@ function resetLeg() {
   editingTurnIndex = null;
   avg1El.textContent = "0";
   avg2El.textContent = "0";
-}
-
-function appendLegHistory(winnerIndex) {
-  const div = document.createElement("div");
-  div.textContent = `${players[winnerIndex]} won leg ${legCounter}`;
-  legsHistoryEl.appendChild(div);
-  legsHistoryEl.scrollTop = legsHistoryEl.scrollHeight;
 }
 
 function handleLegWin(winnerIndex) {
@@ -281,8 +308,37 @@ function handleLegWin(winnerIndex) {
   resetLeg();
 }
 
+// Delete turn at index
+function deleteTurn(index) {
+  turns.splice(index, 1);
+  recalculateScores();
+  renderTurnHistory();
+  updateAverages();
+
+}
+
+// Recalculate scores from turns
+function recalculateScores() {
+  scores = [getStartScore(), getStartScore()];
+  currentPlayer = 0;
+
+  turns.forEach(turn => {
+    const idx = turn.playerIndex;
+    const newScore = scores[idx] - turn.score;
+
+    if (newScore >= 0) {
+      scores[idx] = newScore;
+    }
+
+    currentPlayer = 1 - currentPlayer;
+  });
+
+  updateScores();
+  updateCurrentPlayerLabel();
+}
+
 // ==============================
-// Event handlers
+// 5.Event handlers
 // ==============================
 startBtn.addEventListener("click", () => {
   const p1 = player1Input.value.trim();
@@ -375,55 +431,6 @@ submitTurnBtn.addEventListener("click", () => {
   turnScoreInput.value = "";
 });
 
-// Delete turn at index
-function deleteTurn(index) {
-  turns.splice(index, 1);
-  recalculateScores();
-  renderTurnHistory();
-  updateAverages();
-
-}
-
-
-
-// Recalculate scores from turns
-function recalculateScores() {
-  scores = [getStartScore(), getStartScore()];
-  currentPlayer = 0;
-
-  turns.forEach(turn => {
-    const idx = turn.playerIndex;
-    const newScore = scores[idx] - turn.score;
-
-    if (newScore >= 0) {
-      scores[idx] = newScore;
-    }
-
-    currentPlayer = 1 - currentPlayer;
-  });
-
-  updateScores();
-  updateCurrentPlayerLabel();
-}
-
-// Update average scores per turn
-function updateAverages() {
-  const totals = [0, 0];
-  const counts = [0, 0];
-
-  turns.forEach(turn => {
-    totals[turn.playerIndex] += turn.score;
-    counts[turn.playerIndex]++;
-  });
-
-  avg1El.textContent = counts[0] === 0
-    ? "0"
-    : (totals[0] / counts[0]).toFixed(1);
-
-  avg2El.textContent = counts[1] === 0
-    ? "0"
-    : (totals[1] / counts[1]).toFixed(1);
-}
 
 
 // Event: Reset leg manually (does NOT reset legs count or leg counter)
@@ -513,12 +520,11 @@ endGameBtn.addEventListener("click", () => {
   resetToSetup();
 });
 
-const helpBtn = document.getElementById("helpBtn");
-const helpBox = document.getElementById("helpBox");
 
 helpBtn.addEventListener("click", () => {
     helpBox.classList.toggle("hidden");
 });
+
 // Close help when clicking outside
 document.addEventListener("click", (e) => {
   const helpBtn = document.getElementById("helpBtn");
@@ -532,6 +538,7 @@ document.addEventListener("click", (e) => {
     helpBox.classList.add("hidden");
   }
 });
+
 document.addEventListener("DOMContentLoaded", () => {
   const scoreInput = document.getElementById("scoreInput");
   const addScoreBtn = document.getElementById("addScoreBtn");
